@@ -31,6 +31,7 @@ BoardComparison.PlotTimeDomainList(alpha=0.7)
 BoardComparison.PlotFFTList(alpha=0.7)
 BoardComparison.PlotFFTList(fMax=2000, alpha=0.7)
 
+
 BlockComparison = paa.AudioAnalyzer()
 BlockComparison.readList(
     ['audioFiles/SawBlockCut1.m4a', 'audioFiles/SawBlockCut2.m4a']
