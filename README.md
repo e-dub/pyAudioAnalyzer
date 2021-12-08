@@ -1,9 +1,9 @@
 # pyAudioAnalyzer
 
-[![PyPi Version](https://img.shields.io/pypi/v/pyAudioAnalysis.svg?style=flat-square)](https://pypi.org/project/pyAudioAnalysis)
-[![PyPI pyversions](https://img.shields.io/pypi/pyversions/pyAudioAnalysis.svg?style=flat-square)](https://pypi.org/project/pyAudioAnalysis/)
-[![GitHub stars](https://img.shields.io/github/stars/e-dub/pyAudioAnalysis.svg?style=flat-square&logo=github&label=Stars&logoColor=white)](https://github.com/e-dub/pyAudioAnalysis)
-[![PyPi downloads](https://img.shields.io/pypi/dm/pyAudioAnalysis.svg?style=flat-square)](https://pypistats.org/packages/pyAudioAnalysis)
+[![PyPi Version](https://img.shields.io/pypi/v/pyAudioAnalyzer.svg?style=flat-square)](https://pypi.org/project/pyAudioAnalyzer)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/pyAudioAnalyzer.svg?style=flat-square)](https://pypi.org/project/pyAudioAnalyzer/)
+[![GitHub stars](https://img.shields.io/github/stars/e-dub/pyAudioAnalyzer.svg?style=flat-square&logo=github&label=Stars&logoColor=white)](https://github.com/e-dub/pyAudioAnalyzer)
+[![PyPi downloads](https://img.shields.io/pypi/dm/pyAudioAnalyzer.svg?style=flat-square)](https://pypistats.org/packages/pyAudioAnalyzer)
 [![Code style: blue](https://img.shields.io/badge/code%20style-blue-blue.svg)](https://blue.readthedocs.io/)
 
 **Python library for vibrational analysis of audio**
