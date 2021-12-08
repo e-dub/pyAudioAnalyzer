@@ -1,10 +1,10 @@
-from pyAudioAnalysis import SoundAnalyzer
+from pyAudioAnalyzer import AudioAnalyzer
 
-SA = SoundAnalyzer()
-SA.Lang = 'IT'
-SA.record()
-SA.PlotTimeDomain()
-SA.PlotFFT()
-SA.PlotFFTpyFFTW()
-SA.PlotSpectrogram()
-SA.PlotCepstrum()
+AA = AudioAnalyzer()
+AA.Lang = 'IT'
+AA.record()
+AA.PlotTimeDomain()
+AA.PlotFFT()
+AA.PlotFFTpyFFTW()
+AA.PlotSpectrogram()
+AA.PlotCepstrum()
