@@ -23,7 +23,6 @@ pip install pyfftw
 pip install librosa
 pip install gtts
 pip install sounddevice
-pip install simpleaudio
 ```
 
 ### Install

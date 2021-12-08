@@ -1,1 +1,1 @@
-from pyAudioAnalysis.AnalyzeSoundNew import *
+from pyAudioAnalysis.AnalyzeSound import *

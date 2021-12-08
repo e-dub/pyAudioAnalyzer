@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import time
+import os
 
 
 class SoundAnalyzer:
@@ -34,14 +35,7 @@ class SoundAnalyzer:
         self.t = np.linspace(0, self.tEnd, self.nSamples)
 
     def record(self):
-        # If file blank, record file. Press crtl-c to stop recording!
-        import os
-
-        # import librosa
         from playsound import playsound
-
-        # try:
-        # Better speech
         from gtts import gTTS
 
         if self.Lang.lower() == 'en':
@@ -78,18 +72,12 @@ class SoundAnalyzer:
             )
         tts.save('message.wav')
         playsound('message.wav')
-        # except:
-        #     # Computerized speech
-        #     os.system("say 'we will now record you'")
-        #     os.system("say 'press control-c when you are done'")
-        #     os.system("say 'say something now!'")
         InputFile = 'New.wav'
         os.system('arecord -f dat --file-type wav ' + InputFile)
         playsound(InputFile)
         self.read(InputFile)
 
     def stereo2mono(self):
-        # self.x = self.data[:, channel - 1]
         self.x = self.data[:, 0]
 
     def play(self):
@@ -244,100 +232,3 @@ class SoundAnalyzer:
         plt.xlim([fMin, fMax])
         sns.despine()
         plt.show()
-
-
-if __name__ == '__main__':
-    # Set file to be read
-    InputFileList = [
-        'GuitarVG/A-Saite.wav',
-        'Music/57007r.wav',
-        'Coanda/Coanda_20170930_141820.wav',
-        'Coanda/Coanda_20170930_141820.mp4',
-        'Saw/20200427_091138-NoCut.m4a',
-        'Saw/20200427_091720-BoardCut1.m4a',
-        'Saw/20200427_092056-BlockCut1.m4a',
-        'Saw/20200427_091702-BoardCut2.m4a',
-        'Saw/20200427_092145-BlockCut2.m4a',
-        'Randoms/Bobbypfeife.wav',
-        'Randoms/Bobbypfeife.ogg',
-        'Frequency/Sine_wave_440.ogg',
-        'MusicalNotes/Middle_C.mid',
-        'MusicalNotes/A440.mid',
-        'MusicalNotes/A440_violin.mid',
-        'WineGlass.wav',
-        'Music/01 Fortune, Empress Of The World_.mp3',
-    ]
-
-    # InputFileList= ["Gufler_Klappe.mp4"]
-    InputFileList = ['../examples/audioFiles/WineGlass.wav']
-
-    for iFile in InputFileList:
-        SA = SoundAnalyzer()
-        SA.read(iFile)
-        SA.PlotTimeDomain()
-        SA.PlotFFT()
-        SA.PlotFFTpyFFTW()
-        SA.PlotSpectrogram()
-        SA.PlotCepstrum()
-    # SA.play()
-    SA.PlotFFT(fMax=2000)
-    SA.PlotFFT(fMax=100)
-
-    import simpleaudio as sa
-
-    xFilt1 = SA.filterBandstop(SA.x, 19, 21)
-    xFilt2 = SA.filterBandstop(xFilt1, 38, 42)
-    xFilt2 = SA.filterBandstop(xFilt2, 58, 60)
-    xFilt3 = SA.filterBandstop(xFilt2, 78, 80)
-    SA.x = xFilt3
-    note = xFilt3
-    audio = note * (2 ** 15 - 1) / np.max(np.abs(note))
-    # Convert to 16-bit data
-    audio = audio.astype(np.int16)
-
-    # Start playback
-    # play_obj = sa.play_buffer(audio, 1, 2, SA.fs)
-
-    # Wait for playback to finish before exiting
-    # play_obj.wait_done()
-
-    from scipy.io import wavfile
-
-    wavfile.write('KlappeSimFilter.wav', SA.fs, audio)
-
-    # SA.PlotFFTpyFFTW()
-    # SA.PlotFFTpyFFTW(fMax=100)
-    # SA.play()
-
-    FCutOffNorm = 2000 / (SA.fs / 2)
-    b, a = signal.butter(10, FCutOffNorm, btype='high', analog=False)
-    xFilt = signal.filtfilt(b, a, SA.x)
-    SA.x = xFilt
-    SA.PlotFFTpyFFTW()
-
-    note = xFilt
-    audio = note * (2 ** 15 - 1) / np.max(np.abs(note))
-    # Convert to 16-bit data
-    audio = audio.astype(np.int16)
-
-    # Start playback
-    # play_obj = sa.play_buffer(audio, 1, 2, SA.fs)
-
-    # Wait for playback to finish before exiting
-    # play_obj.wait_done()
-
-    from scipy.io import wavfile
-
-    wavfile.write('KlappeSimFilter2000.wav', SA.fs, audio)
-    # # analysis in frequency domain via fast Fourier transform (fft) with reikna on gpu
-    # from reikna.fft import FFT
-    # X = FFT(x)
-    # XVal = np.abs(X)
-    # f = np.linspace(0.0, fs, int(nSamples/2))
-    # plt.figure()
-    # plt.plot(f[1:], XVal[1:int(nSamples/2)], linewidth=self.LineWidth)
-    # plt.ylabel("amplitude")
-    # plt.xlabel("frequency $f$ [Hz]")
-    # plt.title("Frequency domain")
-    # plt.xlim([0, fs/2])
-    # plt.show()
