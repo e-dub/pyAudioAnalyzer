@@ -26,4 +26,4 @@ python setup.py install
 ```
 
 ## Getting started
-See iPython notebook under examples.
+See Python scripts and iPython notebooks under examples.
