@@ -46,19 +46,35 @@ class SoundAnalyzer:
 
         if self.Lang.lower() == 'en':
             tts = gTTS(
-                text='We will now record the audio.  '
-                + 'Press control-c to stop recording!'
-                + '      '
-                + "Let's go! The recording starts now!",
+                text=(
+                    'We will now record the audio.\n'
+                    'Press control-c to stop recording!\n\n'
+                    "Let's go! The recording starts now!"
+                ),
                 lang='en',
             )
         elif self.Lang.lower() == 'de':
             tts = gTTS(
-                text='Wir werden den Ton nun aufnehmen.  '
-                + 'Drücke Steuerung C, um die Aufnahme zu beenden!  '
-                + '      '
-                + "Los geht's! Die Aufnahme beginnt jetzt!",
+                text=(
+                    'Wir werden den Ton nun aufnehmen.\n'
+                    'Drücke Steuerung C, um die Aufnahme zu beenden!\n\n'
+                    "Los geht's! Die Aufnahme beginnt jetzt!"
+                ),
                 lang='de',
+            )
+        elif self.Lang.lower() == 'it':
+            tts = gTTS(
+                text=(
+                    "Ora registreremo l'audio.\n"
+                    'Prema control-c per interrompere la registrazione!\n\n'
+                    'Andiamo! La registrazione inizia ora!'
+                ),
+                lang='it',
+            )
+        else:
+            print(
+                'No language specified!\n'
+                "Choose English 'EN', German 'DE' or Italian 'IT'"
             )
         tts.save('message.wav')
         playsound('message.wav')
