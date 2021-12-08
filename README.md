@@ -1,4 +1,4 @@
-# pyAudioAnalysis
+# pyAudioAnalyzer
 
 [![PyPi Version](https://img.shields.io/pypi/v/pyAudioAnalysis.svg?style=flat-square)](https://pypi.org/project/pyAudioAnalysis)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/pyAudioAnalysis.svg?style=flat-square)](https://pypi.org/project/pyAudioAnalysis/)

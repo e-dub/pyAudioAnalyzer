@@ -1,17 +1,3 @@
-"""
-Code to analyze acoustic emission
-
-Conversion from m4a to wav:
-    ffmpeg -i filename.m4a filename.wav
-
-Author: Erich Wehrle
-
-TODO:
-    variable titles
-    save files as tikz, svg, png
-    verify cepstrum
-"""
-
 from scipy import signal
 import matplotlib.pyplot as plt
 import numpy as np
@@ -20,7 +6,7 @@ import time
 import os
 
 
-class SoundAnalyzer:
+class AudioAnalyzer:
     LineWidth = 0.5
     Lang = 'en'
 
