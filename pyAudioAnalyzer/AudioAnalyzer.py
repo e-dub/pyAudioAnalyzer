@@ -6,9 +6,36 @@ import time
 import os
 
 
+try:
+    plt.rcParams.update(
+        {
+            'text.usetex': True,
+            'font.family': 'serif',
+            'font.serif': ['Palatino'],
+        }
+    )
+except:
+    pass
+
+
+def _readList(i):
+    AA = AudioAnalyzer()
+    AA.read(i)
+    return AA
+
+
+def _PlotTimeDomain(AA, label, alpha):
+    AA.PlotTimeDomain(label=label, single=False, alpha=alpha)
+
+
+def _PlotFFT(AA, label, alpha):
+    AA.PlotFFT(label=label, single=False, alpha=alpha)
+
+
 class AudioAnalyzer:
     LineWidth = 0.5
     Lang = 'en'
+    X = []
 
     def read(self, InputFile):
         import librosa
@@ -19,6 +46,11 @@ class AudioAnalyzer:
         self.nSamples = len(self.x)
         self.tEnd = self.nSamples / self.fs
         self.t = np.linspace(0, self.tEnd, self.nSamples)
+
+    def readList(self, InputFileList):
+        self.data = [[]] * len(InputFileList)
+        for i, file in enumerate(InputFileList):
+            self.data[i] = _readList(file)
 
     def record(self):
         from playsound import playsound
@@ -87,16 +119,39 @@ class AudioAnalyzer:
         )
         return signal.filtfilt(b, a, x)
 
-    def PlotTimeDomain(self, tMin=0.0, tMax=[]):
+    def PlotTimeDomainList(self, tMin=0.0, tMax=[], alpha=1):
+        ymax = []
+        ymin = []
+        for i, datai in enumerate(self.data):
+            _PlotTimeDomain(datai, self.nameList[i], alpha)
+            ymax.append(datai.x.max())
+            ymin.append(datai.x.min())
+        ymax = np.max([np.max(ymax), np.abs(np.min(ymin))]) * 1.1
+        plt.ylim(-ymax, ymax)
+        plt.xlim(
+            0,
+        )
+        plt.legend(frameon=False, loc='center left', bbox_to_anchor=(1, 0.5))
+        sns.despine()
+        plt.show()
+
+    def PlotTimeDomain(
+        self, tMin=0.0, tMax=[], label=[], single=True, alpha=1
+    ):
         if tMax == []:
             tMax = self.tEnd
         # plot in time domain (original signal)
-        plt.plot(self.t, self.x, self.LineWidth)
-        # plt.title('Time domain')
+        plt.plot(
+            self.t, self.x, linewidth=self.LineWidth, label=label, alpha=alpha
+        )
         plt.xlabel('Time [s]')
-        plt.xlim([tMin, tMax])
-        sns.despine()
-        plt.show()
+        plt.ylabel('amplitude')
+        if single:
+            ymax = np.max((np.abs(self.x.min()), self.x.max())) * 1.1
+            plt.ylim(-ymax, ymax)
+            plt.xlim([tMin, tMax])
+            sns.despine()
+            plt.show()
 
     def cutData(self, tMin=0.0, tMax=[]):
         if tMax == []:
@@ -109,25 +164,39 @@ class AudioAnalyzer:
         self.tEnd = tMax - tMin
         self.nSamples = len(self.x)
 
-    def PlotFFT(self, fMin=0, fMax=[]):
+    def PlotFFTList(self, fMin=0.0, fMax=[], alpha=1):
+        xmax = []
+        for i, datai in enumerate(self.data):
+            _PlotFFT(datai, self.nameList[i], alpha)
+            xmax.append(datai.fs / 2)
+        if fMax == []:
+            fMax = np.max(xmax)
+        plt.xlim(fMin, fMax)
+        plt.legend(frameon=False, loc='center left', bbox_to_anchor=(1, 0.5))
+        sns.despine()
+        plt.show()
+
+    def PlotFFT(self, fMin=0, fMax=[], label=[], single=True, alpha=1):
         if fMax == []:
             fMax = self.fs / 2
         # analysis in frequency domain via fast Fourier transform (fft)
-        self.X = np.fft.fft(self.x)
+        if self.X == []:
+            self.X = np.fft.fft(self.x)
         XVal = np.abs(self.X)
         self.f = np.linspace(0.0, self.fs, self.nSamples)
-        plt.figure()
         plt.plot(
             self.f[1 : int(self.nSamples / 2)],
             XVal[1 : int(self.nSamples / 2)],
             linewidth=self.LineWidth,
+            label=label,
+            alpha=alpha,
         )
-        plt.ylabel('amplitude')
         plt.xlabel('frequency $f$ [Hz]')
-        # plt.title('Amplitude in frequency domain')
-        plt.xlim([fMin, fMax])
-        sns.despine()
-        plt.show()
+        plt.ylabel('amplitude')
+        if single:
+            plt.xlim([fMin, fMax])
+            sns.despine()
+            plt.show()
 
     def PlotPower(self, fMax=[]):
         if fMax == []:
@@ -152,14 +221,15 @@ class AudioAnalyzer:
             fMax = self.fs / 2
         # calculate and plot spectrogram
         plt.specgram(self.x, Fs=self.fs, NFFT=2560)  # , cmap='BuPu')
+        sns.despine()
         plt.ylabel('frequency [Hz]')
         plt.xlabel('time [s]')
         # plt.title('Spectrogram')
         bar = plt.colorbar()
+        bar.outline.set_visible(False)
         bar.set_label('power [dB]')
         plt.ylim([fMin, fMax])
         plt.xlim([tMin, tMax])
-        sns.despine()
         plt.show()
 
     def PlotFFT2TimeDomain(self):
