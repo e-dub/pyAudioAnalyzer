@@ -125,10 +125,10 @@ class SoundAnalyzer:
         # analysis in frequency domain via fast Fourier transform (fft)
         self.X = np.fft.fft(self.x)
         XVal = np.abs(self.X)
-        f = np.linspace(0.0, self.fs, self.nSamples)
+        self.f = np.linspace(0.0, self.fs, self.nSamples)
         plt.figure()
         plt.plot(
-            f[1 : int(self.nSamples / 2)],
+            self.f[1 : int(self.nSamples / 2)],
             XVal[1 : int(self.nSamples / 2)],
             linewidth=self.LineWidth,
         )
