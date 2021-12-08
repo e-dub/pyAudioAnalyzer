@@ -10,18 +10,18 @@ TODO:
     variable titles
     save files as tikz, svg, png
     verify cepstrum
-
 """
 
 from scipy import signal
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 import time
 
 
 class SoundAnalyzer:
     LineWidth = 0.5
-    Lang = "en"
+    Lang = 'en'
 
     def read(self, InputFile):
         import librosa
@@ -44,36 +44,37 @@ class SoundAnalyzer:
         # Better speech
         from gtts import gTTS
 
-        if self.Lang.lower() == "en":
+        if self.Lang.lower() == 'en':
             tts = gTTS(
-                text="We will now record you.  "
-                + "Press control-c when you are done!"
-                + "      "
+                text='We will now record you.  '
+                + 'Press control-c when you are done!'
+                + '      '
                 + "Let's go! Say something now!",
-                lang="en",
+                lang='en',
             )
-        elif self.Lang.lower() == "de":
+        elif self.Lang.lower() == 'de':
             tts = gTTS(
-                text="Wir werden dich nun aufnehmen.  "
-                + "Drücke Steuerung C, wenn du fertig bist!  "
-                + "      "
+                text='Wir werden dich nun aufnehmen.  '
+                + 'Drücke Steuerung C, wenn du fertig bist!  '
+                + '      '
                 + "Los geht's! Sag etwas jetzt!",
-                lang="de",
+                lang='de',
             )
-        tts.save("message.wav")
-        playsound("message.wav")
+        tts.save('message.wav')
+        playsound('message.wav')
         # except:
         #     # Computerized speech
         #     os.system("say 'we will now record you'")
         #     os.system("say 'press control-c when you are done'")
         #     os.system("say 'say something now!'")
-        InputFile = "New.wav"
-        os.system("arecord -f dat --file-type wav " + InputFile)
+        InputFile = 'New.wav'
+        os.system('arecord -f dat --file-type wav ' + InputFile)
         playsound(InputFile)
         self.read(InputFile)
 
     def stereo2mono(self):
-        self.x = self.data[:, channel - 1]
+        # self.x = self.data[:, channel - 1]
+        self.x = self.data[:, 0]
 
     def play(self):
         import sounddevice as sd
@@ -84,27 +85,41 @@ class SoundAnalyzer:
     # Filter data
     def filterLowPass(self, FCutOff=20000):
         FCutOffNorm = FCutOff / (self.fs / 2)
-        b, a = signal.butter(10, FCutOffNorm, btype="low", analog=False)
+        b, a = signal.butter(10, FCutOffNorm, btype='low', analog=False)
         self.xFilt = signal.filtfilt(b, a, self.x)
 
     # Filter data
     def filterBandstop(self, x, fL, fU):
         fLNorm = fL / (self.fs / 2)
         fUNorm = fU / (self.fs / 2)
-        b, a = signal.butter(2, [fLNorm, fUNorm], btype="bandstop", analog=False)
+        b, a = signal.butter(
+            2, [fLNorm, fUNorm], btype='bandstop', analog=False
+        )
         return signal.filtfilt(b, a, x)
 
-    def PlotTimeDomain(self, tMax=[]):
+    def PlotTimeDomain(self, tMin=0.0, tMax=[]):
         if tMax == []:
             tMax = self.tEnd
         # plot in time domain (original signal)
         plt.plot(self.t, self.x, self.LineWidth)
-        plt.title("Time domain")
-        plt.xlabel("Time [sec]")
-        plt.xlim([0, tMax])
+        #plt.title('Time domain')
+        plt.xlabel('Time [s]')
+        plt.xlim([tMin, tMax])
+        sns.despine()
         plt.show()
 
-    def PlotFFT(self, fMax=[]):
+    def cutData(self, tMin=0.0, tMax=[]):
+        if tMax == []:
+            tMax = self.tEnd
+        self.x = self.x[self.t>tMin]
+        self.t = self.t[self.t>tMin]
+        self.x = self.x[self.t<tMax]
+        self.t = self.t[self.t<tMax]
+        self.t = self.t-tMin
+        self.tEnd = tMax-tMin
+        self.nSamples = len(self.x)
+
+    def PlotFFT(self, fMin=0, fMax=[]):
         if fMax == []:
             fMax = self.fs / 2
         # analysis in frequency domain via fast Fourier transform (fft)
@@ -117,10 +132,11 @@ class SoundAnalyzer:
             XVal[1 : int(self.nSamples / 2)],
             linewidth=self.LineWidth,
         )
-        plt.ylabel("amplitude")
-        plt.xlabel("frequency $f$ [Hz]")
-        plt.title("Amplitude in frequency domain")
-        plt.xlim([0, fMax])
+        plt.ylabel('amplitude')
+        plt.xlabel('frequency $f$ [Hz]')
+        #plt.title('Amplitude in frequency domain')
+        plt.xlim([fMin, fMax])
+        sns.despine()
         plt.show()
 
     def PlotPower(self, fMax=[]):
@@ -133,25 +149,27 @@ class SoundAnalyzer:
             10 * np.log10(dB),
             linewidth=self.LineWidth,
         )
-        plt.xlabel("frequency [Hz]")
-        plt.ylabel("power [dB]")
-        plt.title("Log spectrum in frequency domain")
+        plt.xlabel('frequency [Hz]')
+        plt.ylabel('power [dB]')
+        #plt.title('Log spectrum in frequency domain')
+        sns.despine()
         plt.show()
 
-    def PlotSpectrogram(self, fMax=[], tMax=[]):
+    def PlotSpectrogram(self, fMin=0, fMax=[], tMin=0, tMax=[]):
         if tMax == []:
             tMax = self.tEnd
         if fMax == []:
             fMax = self.fs / 2
         # calculate and plot spectrogram
         plt.specgram(self.x, Fs=self.fs, NFFT=2560)  # , cmap='BuPu')
-        plt.ylabel("frequency [Hz]")
-        plt.xlabel("time [s]")
-        plt.title("Spectrogram")
+        plt.ylabel('frequency [Hz]')
+        plt.xlabel('time [s]')
+        #plt.title('Spectrogram')
         bar = plt.colorbar()
-        bar.set_label("power [dB]")
-        plt.ylim([0, fMax])
-        plt.xlim([0, tMax])
+        bar.set_label('power [dB]')
+        plt.ylim([fMin, fMax])
+        plt.xlim([tMin, tMax])
+        sns.despine()
         plt.show()
 
     def PlotFFT2TimeDomain(self):
@@ -159,9 +177,10 @@ class SoundAnalyzer:
         self.xt = np.fft.ifft(self.X)
         plt.figure()
         plt.plot(self.t, self.xt, linewidth=self.LineWidth)
-        plt.ylabel("amplitude")
-        plt.xlabel("time $t$ [s]")
-        plt.title("From frequency domain back into time domain")
+        plt.ylabel('amplitude')
+        plt.xlabel('time $t$ [s]')
+        #plt.title('From frequency domain back into time domain')
+        sns.despine()
         plt.show()
 
     def PlotCepstrum(self, tMax=[]):
@@ -175,12 +194,13 @@ class SoundAnalyzer:
             self.cept[self.t <= tMax],
             linewidth=self.LineWidth,
         )
-        plt.xlabel("quenfrency [ms]")
-        plt.title("Cepstrum")
+        plt.xlabel('quenfrency [ms]')
+        #plt.title('Cepstrum')
         plt.xlim([0, tMax * 100])
+        sns.despine()
         plt.show()
 
-    def PlotFFTpyFFTW(self, nthreads=2, fMax=[]):
+    def PlotFFTpyFFTW(self, nthreads=2, fMin=0, fMax=[]):
         if fMax == []:
             fMax = self.fs / 2
         # analysis in frequency domain via fast Fourier transform (fft) with pyFFTW
@@ -190,7 +210,7 @@ class SoundAnalyzer:
             self.x,
             auto_align_input=True,
             auto_contiguous=True,
-            planner_effort="FFTW_ESTIMATE",
+            planner_effort='FFTW_ESTIMATE',
             threads=nthreads,
             overwrite_input=True,
         )()
@@ -202,37 +222,38 @@ class SoundAnalyzer:
             XVal[1 : int(self.nSamples / 2)],
             linewidth=self.LineWidth,
         )
-        plt.ylabel("amplitude")
-        plt.xlabel("frequency $f$ [Hz]")
-        plt.title("Frequency domain (calculated with pyFFTW)")
-        plt.xlim([0, fMax])
+        plt.ylabel('amplitude')
+        plt.xlabel('frequency $f$ [Hz]')
+        #plt.title('Frequency domain (calculated with pyFFTW)')
+        plt.xlim([fMin, fMax])
+        sns.despine()
         plt.show()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # Set file to be read
     InputFileList = [
-        "GuitarVG/A-Saite.wav",
-        "Music/57007r.wav",
-        "Coanda/Coanda_20170930_141820.wav",
-        "Coanda/Coanda_20170930_141820.mp4",
-        "Saw/20200427_091138-NoCut.m4a",
-        "Saw/20200427_091720-BoardCut1.m4a",
-        "Saw/20200427_092056-BlockCut1.m4a",
-        "Saw/20200427_091702-BoardCut2.m4a",
-        "Saw/20200427_092145-BlockCut2.m4a",
-        "Randoms/Bobbypfeife.wav",
-        "Randoms/Bobbypfeife.ogg",
-        "Frequency/Sine_wave_440.ogg",
-        "MusicalNotes/Middle_C.mid",
-        "MusicalNotes/A440.mid",
-        "MusicalNotes/A440_violin.mid",
-        "WineGlass.wav",
-        "Music/01 Fortune, Empress Of The World_.mp3",
+        'GuitarVG/A-Saite.wav',
+        'Music/57007r.wav',
+        'Coanda/Coanda_20170930_141820.wav',
+        'Coanda/Coanda_20170930_141820.mp4',
+        'Saw/20200427_091138-NoCut.m4a',
+        'Saw/20200427_091720-BoardCut1.m4a',
+        'Saw/20200427_092056-BlockCut1.m4a',
+        'Saw/20200427_091702-BoardCut2.m4a',
+        'Saw/20200427_092145-BlockCut2.m4a',
+        'Randoms/Bobbypfeife.wav',
+        'Randoms/Bobbypfeife.ogg',
+        'Frequency/Sine_wave_440.ogg',
+        'MusicalNotes/Middle_C.mid',
+        'MusicalNotes/A440.mid',
+        'MusicalNotes/A440_violin.mid',
+        'WineGlass.wav',
+        'Music/01 Fortune, Empress Of The World_.mp3',
     ]
 
     # InputFileList= ["Gufler_Klappe.mp4"]
-    InputFileList = [InputFileList[-2]]
+    InputFileList = ["../examples/audioFiles/WineGlass.wav"]
 
     for iFile in InputFileList:
         SA = SoundAnalyzer()
@@ -266,14 +287,14 @@ if __name__ == "__main__":
 
     from scipy.io import wavfile
 
-    wavfile.write("KlappeSimFilter.wav", SA.fs, audio)
+    wavfile.write('KlappeSimFilter.wav', SA.fs, audio)
 
     # SA.PlotFFTpyFFTW()
     # SA.PlotFFTpyFFTW(fMax=100)
     # SA.play()
 
     FCutOffNorm = 2000 / (SA.fs / 2)
-    b, a = signal.butter(10, FCutOffNorm, btype="high", analog=False)
+    b, a = signal.butter(10, FCutOffNorm, btype='high', analog=False)
     xFilt = signal.filtfilt(b, a, SA.x)
     SA.x = xFilt
     SA.PlotFFTpyFFTW()
@@ -291,7 +312,7 @@ if __name__ == "__main__":
 
     from scipy.io import wavfile
 
-    wavfile.write("KlappeSimFilter2000.wav", SA.fs, audio)
+    wavfile.write('KlappeSimFilter2000.wav', SA.fs, audio)
     # # analysis in frequency domain via fast Fourier transform (fft) with reikna on gpu
     # from reikna.fft import FFT
     # X = FFT(x)
