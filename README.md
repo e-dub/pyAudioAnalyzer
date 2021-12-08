@@ -6,8 +6,8 @@
 [![PyPi downloads](https://img.shields.io/pypi/dm/pyAudioAnalyzer.svg?style=flat-square)](https://pypistats.org/packages/pyAudioAnalyzer)
 [![Code style: blue](https://img.shields.io/badge/code%20style-blue-blue.svg)](https://blue.readthedocs.io/)
 
-**Python library for vibrational analysis of audio**
-**Python-Bibliothek für die Schwingungsanalyse von Audio**
+**Python library for vibrational analysis of audio**\
+**Python-Bibliothek für die Schwingungsanalyse von Audio**\
 **Libreria Python per l'analisi vibrazionale dell'audio**
 
 ## Installation
