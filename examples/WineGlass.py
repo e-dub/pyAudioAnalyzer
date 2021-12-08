@@ -1,7 +1,7 @@
 import pyAudioAnalysis as paa
 
 SA = paa.SoundAnalyzer()
-SA.read("audioFiles/WineGlass.wav")
+SA.read('audioFiles/WineGlass.wav')
 SA.play()
 SA.PlotTimeDomain()
 SA.PlotTimeDomain(tMin=0.45, tMax=5)

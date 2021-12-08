@@ -46,18 +46,18 @@ class SoundAnalyzer:
 
         if self.Lang.lower() == 'en':
             tts = gTTS(
-                text='We will now record you.  '
-                + 'Press control-c when you are done!'
+                text='We will now record the audio.  '
+                + 'Press control-c to stop recording!'
                 + '      '
-                + "Let's go! Say something now!",
+                + "Let's go! The recording starts now!",
                 lang='en',
             )
         elif self.Lang.lower() == 'de':
             tts = gTTS(
-                text='Wir werden dich nun aufnehmen.  '
-                + 'Drücke Steuerung C, wenn du fertig bist!  '
+                text='Wir werden den Ton nun aufnehmen.  '
+                + 'Drücke Steuerung C, um die Aufnahme zu beenden!  '
                 + '      '
-                + "Los geht's! Sag etwas jetzt!",
+                + "Los geht's! Die Aufnahme beginnt jetzt!",
                 lang='de',
             )
         tts.save('message.wav')
@@ -102,7 +102,7 @@ class SoundAnalyzer:
             tMax = self.tEnd
         # plot in time domain (original signal)
         plt.plot(self.t, self.x, self.LineWidth)
-        #plt.title('Time domain')
+        # plt.title('Time domain')
         plt.xlabel('Time [s]')
         plt.xlim([tMin, tMax])
         sns.despine()
@@ -111,12 +111,12 @@ class SoundAnalyzer:
     def cutData(self, tMin=0.0, tMax=[]):
         if tMax == []:
             tMax = self.tEnd
-        self.x = self.x[self.t>tMin]
-        self.t = self.t[self.t>tMin]
-        self.x = self.x[self.t<tMax]
-        self.t = self.t[self.t<tMax]
-        self.t = self.t-tMin
-        self.tEnd = tMax-tMin
+        self.x = self.x[self.t > tMin]
+        self.t = self.t[self.t > tMin]
+        self.x = self.x[self.t < tMax]
+        self.t = self.t[self.t < tMax]
+        self.t = self.t - tMin
+        self.tEnd = tMax - tMin
         self.nSamples = len(self.x)
 
     def PlotFFT(self, fMin=0, fMax=[]):
@@ -134,7 +134,7 @@ class SoundAnalyzer:
         )
         plt.ylabel('amplitude')
         plt.xlabel('frequency $f$ [Hz]')
-        #plt.title('Amplitude in frequency domain')
+        # plt.title('Amplitude in frequency domain')
         plt.xlim([fMin, fMax])
         sns.despine()
         plt.show()
@@ -151,7 +151,7 @@ class SoundAnalyzer:
         )
         plt.xlabel('frequency [Hz]')
         plt.ylabel('power [dB]')
-        #plt.title('Log spectrum in frequency domain')
+        # plt.title('Log spectrum in frequency domain')
         sns.despine()
         plt.show()
 
@@ -164,7 +164,7 @@ class SoundAnalyzer:
         plt.specgram(self.x, Fs=self.fs, NFFT=2560)  # , cmap='BuPu')
         plt.ylabel('frequency [Hz]')
         plt.xlabel('time [s]')
-        #plt.title('Spectrogram')
+        # plt.title('Spectrogram')
         bar = plt.colorbar()
         bar.set_label('power [dB]')
         plt.ylim([fMin, fMax])
@@ -179,7 +179,7 @@ class SoundAnalyzer:
         plt.plot(self.t, self.xt, linewidth=self.LineWidth)
         plt.ylabel('amplitude')
         plt.xlabel('time $t$ [s]')
-        #plt.title('From frequency domain back into time domain')
+        # plt.title('From frequency domain back into time domain')
         sns.despine()
         plt.show()
 
@@ -195,7 +195,7 @@ class SoundAnalyzer:
             linewidth=self.LineWidth,
         )
         plt.xlabel('quenfrency [ms]')
-        #plt.title('Cepstrum')
+        # plt.title('Cepstrum')
         plt.xlim([0, tMax * 100])
         sns.despine()
         plt.show()
@@ -224,7 +224,7 @@ class SoundAnalyzer:
         )
         plt.ylabel('amplitude')
         plt.xlabel('frequency $f$ [Hz]')
-        #plt.title('Frequency domain (calculated with pyFFTW)')
+        # plt.title('Frequency domain (calculated with pyFFTW)')
         plt.xlim([fMin, fMax])
         sns.despine()
         plt.show()
@@ -253,7 +253,7 @@ if __name__ == '__main__':
     ]
 
     # InputFileList= ["Gufler_Klappe.mp4"]
-    InputFileList = ["../examples/audioFiles/WineGlass.wav"]
+    InputFileList = ['../examples/audioFiles/WineGlass.wav']
 
     for iFile in InputFileList:
         SA = SoundAnalyzer()
