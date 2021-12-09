@@ -1,5 +1,6 @@
 # pyAudioAnalyzer
 
+[![DOI](https://zenodo.org/badge/414517473.svg)](https://zenodo.org/badge/latestdoi/414517473)
 [![PyPi Version](https://img.shields.io/pypi/v/pyAudioAnalyzer.svg?style=flat-square)](https://pypi.org/project/pyAudioAnalyzer)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/pyAudioAnalyzer.svg?style=flat-square)](https://pypi.org/project/pyAudioAnalyzer/)
 [![GitHub stars](https://img.shields.io/github/stars/e-dub/pyAudioAnalyzer.svg?style=flat-square&logo=github&label=Stars&logoColor=white)](https://github.com/e-dub/pyAudioAnalyzer)
