@@ -34,3 +34,10 @@ python setup.py install
 
 ## Getting started
 See Python scripts and iPython notebooks under examples.
+
+
+## File types
+- M4A:  Audio-only MPEG-4 (Moving Picture Experts Group)
+- 3GP, 3G2: MPEG-4, for smartphones typically Part 12 and specifically 3GP
+- WAV: Waveform Audio File Format
+- MP3: MPEG-1 Audio Layer III and MPEG-2 Audio Layer III
