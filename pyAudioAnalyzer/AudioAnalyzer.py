@@ -145,6 +145,7 @@ class AudioAnalyzer:
         )
         plt.legend(frameon=False, loc='center left', bbox_to_anchor=(1, 0.5))
         sns.despine()
+        plt.tight_layout()
         if title:
             plt.title(title)
         if saveas:
@@ -170,11 +171,12 @@ class AudioAnalyzer:
             plt.ylim(-ymax, ymax)
             plt.xlim([tMin, tMax])
             sns.despine()
+            plt.tight_layout()
             if saveas:
                 plt.savefig(saveas)
             plt.show()
 
-    def _PlotDecibel(self, tMin=0.0, tMax=[], label=[], single=True, alpha=1):
+    def _PlotDecibel(self, tMin=0.0, tMax=[], label=[], single=True, alpha=1, saveas=False):
         """
         not working!
         self.dB = 20 * np.log10(abs(val) / ref)
@@ -193,6 +195,7 @@ class AudioAnalyzer:
         )
         plt.xlabel('time [s]')
         plt.ylabel('sound pressure level $L_p$ [dB]')
+        plt.tight_layout()
         if saveas:
             plt.savefig(saveas)
         plt.show()
@@ -218,6 +221,7 @@ class AudioAnalyzer:
         plt.xlim(fMin, fMax)
         plt.legend(frameon=False, loc='center left', bbox_to_anchor=(1, 0.5))
         sns.despine()
+        plt.tight_layout()
         if title:
             plt.title(title)
         if saveas:
@@ -247,6 +251,7 @@ class AudioAnalyzer:
             sns.despine()
             plt.xlim([fMin, fMax])
             plt.ylim(0, np.max(XVal)*1.1)
+            plt.tight_layout()
             if saveas:
                 plt.savefig(saveas)
             plt.show()
@@ -267,6 +272,7 @@ class AudioAnalyzer:
             plt.title(title)
         # plt.title('Log spectrum in frequency domain')
         sns.despine()
+        plt.tight_layout()
         if saveas:
             plt.savefig(saveas)
         plt.show()
@@ -302,6 +308,7 @@ class AudioAnalyzer:
         plt.xlabel('time $t$ [s]')
         # plt.title('From frequency domain back into time domain')
         sns.despine()
+        plt.tight_layout()
         if title:
             plt.title(title)
         if saveas:
@@ -323,6 +330,7 @@ class AudioAnalyzer:
         # plt.title('Cepstrum')
         plt.xlim([0, tMax * 100])
         sns.despine()
+        plt.tight_layout()
         if title:
             plt.title(title)
         if saveas:
@@ -356,6 +364,7 @@ class AudioAnalyzer:
         # plt.title('Frequency domain (calculated with pyFFTW)')
         plt.xlim([fMin, fMax])
         sns.despine()
+        plt.tight_layout()
         if title:
             plt.title(title)
         if saveas:
