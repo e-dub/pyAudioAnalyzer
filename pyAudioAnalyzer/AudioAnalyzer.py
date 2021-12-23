@@ -37,14 +37,26 @@ class AudioAnalyzer:
     Lang = 'en'
     X = []
 
-    def read(self, InputFile):
+    def readSlow(self, InputFile):
         import librosa
+        #import librosa.display
 
         self.data, self.fs = librosa.load(InputFile)
         self.x = self.data
         self.DataType = self.x.dtype
         self.nSamples = len(self.x)
         self.tEnd = self.nSamples / self.fs
+        self.t = np.linspace(0, self.tEnd, self.nSamples)
+        #librosa.display.waveplot(self.data, sr=self.fs, x_axis='time')
+
+    def read(self, InputFile):
+        import pydub as pd
+        file = pd.AudioSegment.from_file(InputFile)
+        self.data = np.array(file.get_array_of_samples())
+        self.x = np.array(file.get_array_of_samples())
+        self.fs = file.frame_rate
+        self.tEnd = file.duration_seconds
+        self.nSamples = int(file.frame_count())
         self.t = np.linspace(0, self.tEnd, self.nSamples)
 
     def readList(self, InputFileList):
@@ -119,7 +131,7 @@ class AudioAnalyzer:
         )
         return signal.filtfilt(b, a, x)
 
-    def PlotTimeDomainList(self, tMin=0.0, tMax=[], alpha=1):
+    def PlotTimeDomainList(self, tMin=0.0, tMax=[], alpha=1, title=False, saveas=False):
         ymax = []
         ymin = []
         for i, datai in enumerate(self.data):
@@ -133,10 +145,14 @@ class AudioAnalyzer:
         )
         plt.legend(frameon=False, loc='center left', bbox_to_anchor=(1, 0.5))
         sns.despine()
+        if title:
+            plt.title(title)
+        if saveas:
+            plt.savefig(saveas)
         plt.show()
 
     def PlotTimeDomain(
-        self, tMin=0.0, tMax=[], label=[], single=True, alpha=1
+        self, tMin=0.0, tMax=[], label=[], single=True, alpha=1, title=False, saveas=False
     ):
         if tMax == []:
             tMax = self.tEnd
@@ -144,14 +160,42 @@ class AudioAnalyzer:
         plt.plot(
             self.t, self.x, linewidth=self.LineWidth, label=label, alpha=alpha
         )
-        plt.xlabel('Time [s]')
+        plt.xlabel('time [s]')
+        #plt.ylabel('sound pressure [Pa]')
         plt.ylabel('amplitude')
+        if title:
+            plt.title(title)
         if single:
             ymax = np.max((np.abs(self.x.min()), self.x.max())) * 1.1
             plt.ylim(-ymax, ymax)
             plt.xlim([tMin, tMax])
             sns.despine()
+            if saveas:
+                plt.savefig(saveas)
             plt.show()
+
+    def _PlotDecibel(self, tMin=0.0, tMax=[], label=[], single=True, alpha=1):
+        """
+        not working!
+        self.dB = 20 * np.log10(abs(val) / ref)
+        self.dB = 10 * np.log10(self.x)
+        self.dB = 20 * np.log10(abs(self.x) / 32768.0)
+        """
+
+
+        self.dB = [
+            20
+            * np.log10(np.sqrt(np.mean(np.power(np.abs(self.x[k]), 2))) / 2e-5)
+            for k in range(self.nSamples)
+        ]
+        plt.plot(
+            self.t, self.dB, linewidth=self.LineWidth, label=label, alpha=alpha
+        )
+        plt.xlabel('time [s]')
+        plt.ylabel('sound pressure level $L_p$ [dB]')
+        if saveas:
+            plt.savefig(saveas)
+        plt.show()
 
     def cutData(self, tMin=0.0, tMax=[]):
         if tMax == []:
@@ -164,7 +208,7 @@ class AudioAnalyzer:
         self.tEnd = tMax - tMin
         self.nSamples = len(self.x)
 
-    def PlotFFTList(self, fMin=0.0, fMax=[], alpha=1):
+    def PlotFFTList(self, fMin=0.0, fMax=[], alpha=1, title=False, saveas=False):
         xmax = []
         for i, datai in enumerate(self.data):
             _PlotFFT(datai, self.nameList[i], alpha)
@@ -174,9 +218,13 @@ class AudioAnalyzer:
         plt.xlim(fMin, fMax)
         plt.legend(frameon=False, loc='center left', bbox_to_anchor=(1, 0.5))
         sns.despine()
+        if title:
+            plt.title(title)
+        if saveas:
+            plt.savefig(saveas)
         plt.show()
 
-    def PlotFFT(self, fMin=0, fMax=[], label=[], single=True, alpha=1):
+    def PlotFFT(self, fMin=0, fMax=[], label=[], single=True, alpha=1, title=False, saveas=False):
         if fMax == []:
             fMax = self.fs / 2
         # analysis in frequency domain via fast Fourier transform (fft)
@@ -193,12 +241,17 @@ class AudioAnalyzer:
         )
         plt.xlabel('frequency $f$ [Hz]')
         plt.ylabel('amplitude')
+        if title:
+            plt.title(title)
         if single:
-            plt.xlim([fMin, fMax])
             sns.despine()
+            plt.xlim([fMin, fMax])
+            plt.ylim(0, np.max(XVal)*1.1)
+            if saveas:
+                plt.savefig(saveas)
             plt.show()
 
-    def PlotPower(self, fMax=[]):
+    def PlotPower(self, fMax=[], title=False, saveas=False):
         if fMax == []:
             fMax = self.fs / 2
         # calculate power and plot
@@ -210,11 +263,15 @@ class AudioAnalyzer:
         )
         plt.xlabel('frequency [Hz]')
         plt.ylabel('power [dB]')
+        if title:
+            plt.title(title)
         # plt.title('Log spectrum in frequency domain')
         sns.despine()
+        if saveas:
+            plt.savefig(saveas)
         plt.show()
 
-    def PlotSpectrogram(self, fMin=0, fMax=[], tMin=0, tMax=[]):
+    def PlotSpectrogram(self, fMin=0, fMax=[], tMin=0, tMax=[], title=False, saveas=False):
         if tMax == []:
             tMax = self.tEnd
         if fMax == []:
@@ -230,9 +287,13 @@ class AudioAnalyzer:
         bar.set_label('power [dB]')
         plt.ylim([fMin, fMax])
         plt.xlim([tMin, tMax])
+        if title:
+            plt.title(title)
+        if saveas:
+            plt.savefig(saveas)
         plt.show()
 
-    def PlotFFT2TimeDomain(self):
+    def PlotFFT2TimeDomain(self, title=False, saveas=False):
         # conversion back to time domain via inverse fast Fourier transfrom (ifft)
         self.xt = np.fft.ifft(self.X)
         plt.figure()
@@ -241,9 +302,13 @@ class AudioAnalyzer:
         plt.xlabel('time $t$ [s]')
         # plt.title('From frequency domain back into time domain')
         sns.despine()
+        if title:
+            plt.title(title)
+        if saveas:
+            plt.savefig(saveas)
         plt.show()
 
-    def PlotCepstrum(self, tMax=[]):
+    def PlotCepstrum(self, tMax=[], title=False, saveas=False):
         if tMax == []:
             tMax = self.tEnd / 100
         # cepstrum
@@ -258,14 +323,18 @@ class AudioAnalyzer:
         # plt.title('Cepstrum')
         plt.xlim([0, tMax * 100])
         sns.despine()
+        if title:
+            plt.title(title)
+        if saveas:
+            plt.savefig(saveas)
         plt.show()
 
-    def PlotFFTpyFFTW(self, nthreads=2, fMin=0, fMax=[]):
+    def PlotFFTpyFFTW(self, nthreads=2, fMin=0, fMax=[], title=False, saveas=False):
+        import pyfftw
+
         if fMax == []:
             fMax = self.fs / 2
         # analysis in frequency domain via fast Fourier transform (fft) with pyFFTW
-        import pyfftw
-
         self.X = pyfftw.builders.fft(
             self.x,
             auto_align_input=True,
@@ -287,4 +356,8 @@ class AudioAnalyzer:
         # plt.title('Frequency domain (calculated with pyFFTW)')
         plt.xlim([fMin, fMax])
         sns.despine()
+        if title:
+            plt.title(title)
+        if saveas:
+            plt.savefig(saveas)
         plt.show()
