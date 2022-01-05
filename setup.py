@@ -17,7 +17,7 @@ if __name__ == '__main__':
     extra_files = package_files('pyAudioAnalyzer')
     setup(
         name='pyAudioAnalyzer',
-        version='0.2',
+        version='0.2.1',
         description='Python library for vibrational analysis of audio',
         author='E. J. Wehrle',
         url='https://github.com/e-dub/pyAudioAnalyzer',
@@ -34,6 +34,6 @@ if __name__ == '__main__':
             'librosa',
             'gtts',
             'sounddevice',
-            'pydub'
+            'pydub',
         ],
     )
