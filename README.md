@@ -30,8 +30,15 @@ Currently, I am using librosa to read audio files.  This requires FFMPEG to work
 sudo apt-get install libsndfile1
 
 ### Install
+
+Clone repository and install via PIP using the state of this repository:
 ```
 python -m pip install -U .
+```
+
+You can also install via PIP with the last release:
+```
+pip install pyAudioAnalyzer
 ```
 
 ## Getting started
