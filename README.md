@@ -27,9 +27,11 @@ pip install sounddevice
 ```
 Currently, I am using librosa to read audio files.  This requires FFMPEG to work. Unfortunately, there is no installer available for Windows (to my knowledge) and you have to unzip and set the environmental variables.  Several installation guides are available for this. 
 
+sudo apt-get install libsndfile1
+
 ### Install
 ```
-python setup.py install
+python -m pip install -U .
 ```
 
 ## Getting started
