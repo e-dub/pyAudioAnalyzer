@@ -174,7 +174,7 @@ class AudioAnalyzer:
         saveas=False,
         close=False,
     ):
-        if isinstance(tMax, list) and not self.tMax:  # if tMax == []:
+        if tMax == []:
             tMax = self.tEnd
         # plot in time domain (original signal)
         plt.plot(
@@ -197,7 +197,7 @@ class AudioAnalyzer:
                 plt.close()
 
     def cutData(self, tMin=0.0, tMax=[]):
-        if isinstance(tMax, list) and not self.tMax:  # if tMax == []:
+        if tMax == []:
             tMax = self.tEnd
         self.x = self.x[self.t > tMin]
         self.t = self.t[self.t > tMin]
@@ -220,7 +220,7 @@ class AudioAnalyzer:
         for i, datai in enumerate(self.x):
             _PlotFFT(datai, self.nameList[i], alpha)
             xmax.append(datai.fs / 2)
-        if isinstance(fMax, list) and not self.fMax:  # if fMax == []:
+        if fMax == []:
             fMax = np.max(xmax)
         plt.xlim(fMin, fMax)
         plt.legend(frameon=False, loc='center left', bbox_to_anchor=(1, 0.5))
@@ -245,7 +245,7 @@ class AudioAnalyzer:
         saveas=False,
         close=False,
     ):
-        if isinstance(fMax, list) and not self.fMax:  # if fMax == []:
+        if fMax == []:
             fMax = self.fs / 2
         # analysis in frequency domain via fast Fourier transform (fft)
         if isinstance(self.X, list) and not self.X:  # if self.X == []:
@@ -275,7 +275,7 @@ class AudioAnalyzer:
                 plt.close()
 
     def PlotPower(self, fMax=[], title=False, saveas=False, close=False):
-        if isinstance(fMax, list) and not self.fMax:  # if fMax == []:
+        if fMax == []:
             fMax = self.fs / 2
         # calculate power and plot
         dB = self.X[0 : int(self.nSamples / 2)] / self.nSamples
@@ -307,9 +307,9 @@ class AudioAnalyzer:
         saveas=False,
         close=False,
     ):
-        if isinstance(tMax, list) and not self.tMax:  # if fMax == []:
+        if tMax == []:
             tMax = self.tEnd
-        if isinstance(fMax, list) and not self.fMax:  # if fMax == []:
+        if fMax == []:
             fMax = self.fs / 2
         # calculate and plot spectrogram
         plt.specgram(self.x, Fs=self.fs, NFFT=2560)  # , cmap='BuPu')
@@ -350,7 +350,7 @@ class AudioAnalyzer:
             plt.close()
 
     def PlotCepstrum(self, tMax=[], title=False, saveas=False, close=False):
-        if isinstance(tMax, list) and not self.tMax:  # if tMax == []:
+        if tMax == []:
             tMax = self.tEnd / 100
         # cepstrum
         # self.cept = np.fft.ifft(np.log(np.abs(X)**2.0))**2.0
@@ -384,7 +384,7 @@ class AudioAnalyzer:
     ):
         import pyfftw
 
-        if isinstance(fMax, list) and not self.fMax:  # if fMax == []:
+        if fMax == []:
             fMax = self.fs / 2
         # analysis in frequency domain via fast Fourier transform (fft) with pyFFTW
         self.X = pyfftw.builders.fft(
